@@ -97,6 +97,13 @@ class AnimalSorterTest {
         assertThat(result).extracting(Animal::getName).containsExactly("Alpha", "zebra");
     }
 
+    @Test
+    @DisplayName("sortByName: returns empty list for null input")
+    void shouldReturnEmptyForNullInputByName() {
+        List<Animal> result = sorter.sortByName(null);
+        assertThat(result).isEmpty();
+    }
+
     // --- sortByIntakeDate ---
 
     @Test
@@ -107,6 +114,13 @@ class AnimalSorterTest {
         assertThat(result).extracting(Animal::getName).containsExactly("Bella", "Luna", "Buddy", "Max");
     }
 
+    @Test
+    @DisplayName("sortByIntakeDate: returns empty list for null input")
+    void shouldReturnEmptyForNullInputByIntakeDate() {
+        List<Animal> result = sorter.sortByIntakeDate(null);
+        assertThat(result).isEmpty();
+    }
+
     // --- sortBySpeciesThenAgeDescending ---
 
     @Test
@@ -115,5 +129,12 @@ class AnimalSorterTest {
 
         List<Animal> result = sorter.sortBySpeciesThenAgeDescending(List.of(buddy, luna, max, bella));
         assertThat(result).extracting(Animal::getName).containsExactly("Luna", "Bella", "Max", "Buddy");
+    }
+
+    @Test
+    @DisplayName("sortBySpeciesThenAgeDescending: returns empty list for null input")
+    void shouldReturnEmptyForNullInputBySpeciesThenAge() {
+        List<Animal> result = sorter.sortBySpeciesThenAgeDescending(null);
+        assertThat(result).isEmpty();
     }
 }
