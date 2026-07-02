@@ -7,9 +7,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Task 5: Nested test classes for CSV parsing
@@ -166,28 +170,43 @@ class AnimalCsvParserTest {
         @Test
         @DisplayName("parses valid rows and counts skipped rows")
         void shouldParseFileAndCountSkipped() throws IOException {
-            // TODO: Create a temp file with a header + 3 valid rows + 1 malformed row
-            //   Hint: Path tempFile = Files.createTempFile("test-intake", ".csv");
-            //         Files.writeString(tempFile, content, StandardCharsets.UTF_8);
-            // TODO: Call parser.parseFile(tempFile)
-            // TODO: Assert result.animals() has size 3
-            // TODO: Assert result.skippedRows() == 1
-            // TODO: Clean up: Files.deleteIfExists(tempFile)
+
+            Path tempFile = Files.createTempFile("test-intake", ".csv");
+            String content = """
+                    name,species,age,vaccinated,intakeDate
+                    Buddy,Dog,3,true,2026-01-15
+                    Luna,Cat,2,true,2026-01-10
+                    Max,Dog,5,false,2026-01-20
+                    Bella,Cat,old,true,2026-01-05
+                    """;
+            Files.writeString(tempFile, content, StandardCharsets.UTF_8);
+
+            AnimalCsvParser.ParseResult result = parser.parseFile(tempFile);
+            assertThat(result.animals()).hasSize(3);
+            assertThat(result.skippedRows()).isEqualTo(1);
+
+            Files.deleteIfExists(tempFile);
         }
 
         @Test
         @DisplayName("returns empty result for file with only a header")
         void shouldReturnEmptyForHeaderOnly() throws IOException {
-            // TODO: Create a temp file with just "name,species,age,vaccinated,intakeDate"
-            // TODO: Call parser.parseFile(tempFile)
-            // TODO: Assert result.animals() is empty and skippedRows == 0
+
+            Path tempFile = Files.createTempFile("test-intake-header-only", ".csv");
+            Files.writeString(tempFile, "name,species,age,vaccinated,intakeDate\n", StandardCharsets.UTF_8);
+
+            AnimalCsvParser.ParseResult result = parser.parseFile(tempFile);
+            assertThat(result.animals()).isEmpty();
+            assertThat(result.skippedRows()).isEqualTo(0);
+
+            Files.deleteIfExists(tempFile);
         }
 
         @Test
         @DisplayName("throws IOException for non-existent file")
         void shouldThrowForMissingFile() {
-            // TODO: Call parser.parseFile(Path.of("does-not-exist.csv"))
-            // TODO: Assert it throws IOException
+            assertThatThrownBy(() -> parser.parseFile(Path.of("does-not-exist.csv")))
+                    .isInstanceOf(IOException.class);
         }
     }
 }
