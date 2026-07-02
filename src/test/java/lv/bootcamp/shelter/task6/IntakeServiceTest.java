@@ -110,6 +110,14 @@ class IntakeServiceTest {
         }
     }
 
+    @Test
+    @DisplayName("throws for null name without calling repository")
+    void shouldThrowForNullName() {
+        assertThrows(IllegalArgumentException.class, () -> service.findByName(null));
+
+        verify(repository, never()).findByName(any());
+    }
+
     // ==================== findBySpecies() ====================
 
     @Nested

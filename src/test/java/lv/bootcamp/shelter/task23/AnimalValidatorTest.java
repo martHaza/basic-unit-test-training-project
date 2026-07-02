@@ -138,6 +138,14 @@ class AnimalValidatorTest {
         }
 
         @Test
+        @DisplayName("throws for animal with null species")
+        void shouldThrowForNullSpecies() {
+            Animal animal = new Animal("Buddy", null, 3, true, LocalDate.now());
+
+            assertThrows(IllegalArgumentException.class, () -> validator.validate(animal));
+        }
+
+        @Test
         @DisplayName("throws for animal with negative age")
         void shouldThrowForNegativeAge() {
 
